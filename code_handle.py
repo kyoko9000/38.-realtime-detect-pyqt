@@ -17,10 +17,17 @@ def convert_cv_qt(cv_img):
     p = convert_to_Qt_format.scaled(700, 500, Qt.KeepAspectRatio)
     return QPixmap.fromImage(p)
 
+
 class live_stream(QThread):
     signal = pyqtSignal(np.ndarray)
 
     def __init__(self, index):
+        self.device = None
+        self.out_file = None
+        self.classes = None
+        self.model = None
+        self.gg = True
+        self.player = None
         self.index = index
         print("start threading", self.index)
         super(live_stream, self).__init__()
@@ -85,7 +92,7 @@ class live_stream(QThread):
         x_shape, y_shape = frame.shape[1], frame.shape[0]
         for i in range(n):
             row = cord[i]
-            print("kim dung", round(cord[i][4], 2))
+            print("ddd", round(cord[i][4], 2))
             if row[4] >= 0.2:
                 x1, y1, x2, y2 = int(row[0] * x_shape), int(row[1] * y_shape), int(row[2] * x_shape), int(row[3] * y_shape)
                 bgr = (0, 255, 0)
@@ -100,15 +107,16 @@ class live_stream(QThread):
         and write the output into a new file.
         :return: void
         """
-        player = self.get_video_from_url()
-        assert player.isOpened()
-        x_shape = int(player.get(cv2.CAP_PROP_FRAME_WIDTH))
-        y_shape = int(player.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.player = self.get_video_from_url()
+        assert self.player.isOpened()
+        x_shape = int(self.player.get(cv2.CAP_PROP_FRAME_WIDTH))
+        y_shape = int(self.player.get(cv2.CAP_PROP_FRAME_HEIGHT))
         four_cc = cv2.VideoWriter_fourcc(*"MJPG")
         out = cv2.VideoWriter(self.out_file, four_cc, 20, (x_shape, y_shape))
+        
         while True:
             start_time = time()
-            ret, frame = player.read()
+            ret, frame = self.player.read()
             assert ret
             results = self.score_frame(frame)
             frame = self.plot_boxes(results, frame)
@@ -117,7 +125,16 @@ class live_stream(QThread):
             print(f"Frames Per Second : {round(fps,2)} FPS")
             # out.write(frame)
             self.signal.emit(frame)
-
+            if not self.gg:
+                print("stop capture video")
+                break
+                
     def stop(self):
         print("stop threading", self.index)
+        self.player.release()
+        cv2.destroyAllWindows()
         self.terminate()
+
+    def pause_stream(self):
+        self.gg = False
+
