@@ -58,6 +58,7 @@ class live_stream(QThread):
         """
         # model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
         model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
+        # model = torch.hub.load('yolov5-master', 'custom', path='yolov5s.pt', source='local')
         return model
 
     def score_frame(self, frame):
