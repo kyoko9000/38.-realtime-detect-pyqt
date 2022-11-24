@@ -3,8 +3,9 @@ import cv2
 import torch
 
 # define a video capture object
-vid = cv2.VideoCapture(0)
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
+vid = cv2.VideoCapture(0)  # "My Video.mp4"
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
+# model.classes = [2]
 classes = model.names
 out_file = "Labeled_Video.avi"
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -44,7 +45,7 @@ def plot_boxes(results, frame):
     x_shape, y_shape = frame.shape[1], frame.shape[0]
     for i in range(n):
         row = cord[i]
-        print("ddd", round(cord[i][4], 2))
+        # print("predict", round(cord[i][4], 2))
         if row[4] >= 0.2:
             x1, y1, x2, y2 = int(row[0] * x_shape), int(row[1] * y_shape), int(row[2] * x_shape), int(
                 row[3] * y_shape)
@@ -62,6 +63,7 @@ while (True):
     # by frame
     ret, frame = vid.read()
     results = score_frame(frame)
+    print(results)
     frame = plot_boxes(results, frame)
     # Display the resulting frame
     cv2.imshow('frame', frame)
