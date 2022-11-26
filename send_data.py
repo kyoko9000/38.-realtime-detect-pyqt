@@ -14,8 +14,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 def score_frame(frame):
     """
     Takes a single frame as input, and scores the frame using yolo5 model.
-    :param frame: input frame in numpy/list/tuple format.
-    :return: Labels and Coordinates of objects detected by model in the frame.
+    param frame: input frame in numpy/list/tuple format.
+    return: Labels and Coordinates of objects detected by model in the frame.
     """
     model.to(device)
     frame = [frame]
@@ -36,9 +36,9 @@ def class_to_label(x):
 def plot_boxes(results, frame):
     """
     Takes a frame and its results as input, and plots the bounding boxes and label on to the frame.
-    :param results: contains labels and coordinates predicted by model on the given frame.
-    :param frame: Frame which has been scored.
-    :return: Frame with bounding boxes and labels ploted on it.
+    param results: contains labels and coordinates predicted by model on the given frame.
+    param frame: Frame which has been scored.
+    return: Frame with bounding boxes and labels ploted on it.
     """
     labels, cord = results
     print("labels", labels)
@@ -70,7 +70,7 @@ def plot_boxes(results, frame):
     return frame
 
 
-while (True):
+while True:
 
     # Capture the video frame
     # by frame
