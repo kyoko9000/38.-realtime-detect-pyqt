@@ -2,11 +2,10 @@ import cv2
 import torch
 
 # define a video capture object
-vid = cv2.VideoCapture(0)  # "My Video.mp4"
+vid = cv2.VideoCapture("movies/2.mp4")
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
-# model.classes = [2]
-classes = model.names
-out_file = "Labeled_Video.avi"
+# model.classes = [2]  # 0: human, 2: car, 14: bird
+classes = model.names  # name of objects
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
@@ -42,16 +41,17 @@ def plot_boxes(results, frame):
     labels, cord = results
     print("labels", labels)
     print("cord", cord[:, :-1])
+    clas = 14
     if len(labels) != 0:
         print("list is not empty")
         for label in labels:
-            if label == 0:
-                print("send 1")
+            if label == clas:
+                print("send objects")
             else:
-                print("send 0")
+                print("wrong objects")
     else:
         print("list is empty")
-        print("send 0")
+        print("no objects")
 
     n = len(labels)
     x_shape, y_shape = frame.shape[1], frame.shape[0]
@@ -74,7 +74,7 @@ while True:
     # by frame
     ret, frame = vid.read()
     results = score_frame(frame)
-    print(results)
+    # print(results)
     frame = plot_boxes(results, frame)
     # Display the resulting frame
     cv2.imshow('frame', frame)
