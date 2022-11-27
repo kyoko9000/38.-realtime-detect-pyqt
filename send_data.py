@@ -1,4 +1,3 @@
-# import the opencv library
 import cv2
 import torch
 
@@ -71,7 +70,6 @@ def plot_boxes(results, frame):
 
 
 while True:
-
     # Capture the video frame
     # by frame
     ret, frame = vid.read()
