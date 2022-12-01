@@ -4,7 +4,8 @@ import torch
 # define a video capture object
 vid = cv2.VideoCapture("movies/2.mp4")
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
-# model.classes = [2]  # 0: human, 2: car, 14: bird
+# model = torch.hub.load('yolov5-master', 'custom', path='yolov5s.pt', source='local')
+# model.classes = [2, 0]  # 0: human, 2: car, 14: bird
 classes = model.names  # name of objects
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -74,7 +75,7 @@ while True:
     # by frame
     ret, frame = vid.read()
     results = score_frame(frame)
-    # print(results)
+    print(results)
     frame = plot_boxes(results, frame)
     # Display the resulting frame
     cv2.imshow('frame', frame)
